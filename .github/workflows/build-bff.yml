@@ -2,7 +2,7 @@ name: Build BFF
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths: ['bff/**']
 
 jobs:
