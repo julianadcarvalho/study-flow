@@ -11,8 +11,6 @@ export interface StudyMaterial {
     status: 'unread' | 'read';
     planoId?: number;
   }
-  
-  
 
 export const getStudyMaterials = async (): Promise<StudyMaterial[]> => {
   const response = await axios.get(`${API_URL}/study-materials`);
