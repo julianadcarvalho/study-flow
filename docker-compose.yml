@@ -1,0 +1,55 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: study-flow-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: study_flow
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"
+    networks:
+      - study-flow
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  bff:
+    build:
+      context: ./bff
+      dockerfile: Dockerfile
+    container_name: study-flow-bff
+    command: npm run start:dev
+    volumes:
+      - ./bff:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    networks:
+      - study-flow
+    environment:
+      DATABASE_URL: mysql://user:password@mysql:3307/study_flow
+
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: study-flow-ui
+    command: npm run dev -- --host
+    volumes:
+      - ./ui:/app
+    ports:
+      - "5173:5173"
+    depends_on:
+      - bff
+    networks:
+      - study-flow
+
+networks:
+  study-flow:
+    driver: bridge
+
+volumes:
+  mysql_data:

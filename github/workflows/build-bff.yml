@@ -1,0 +1,28 @@
+name: Build BFF
+
+on:
+  push:
+    branches: [main]
+    paths: ['bff/**']
+
+jobs:
+  build-bff:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bff
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build app
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: bff-build
+          path: ./bff/dist
