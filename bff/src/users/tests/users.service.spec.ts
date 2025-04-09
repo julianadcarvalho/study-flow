@@ -106,6 +106,7 @@ describe('UsersService', () => {
   describe('update', () => {
     it('should update and return the user', async () => {
       const updatedUser = { ...mockUser, name: 'Updated' };
+      jest.spyOn(repository, 'findOne').mockResolvedValue(mockUser);
       jest.spyOn(repository, 'save').mockResolvedValue(updatedUser);
 
       const result = await service.update(1, { name: 'Updated' });
@@ -122,6 +123,7 @@ describe('UsersService', () => {
 
   describe('remove', () => {
     it('should soft delete the user', async () => {
+      await service.remove(1);
       expect(repository.softDelete).toHaveBeenCalledWith(1);
     });
 

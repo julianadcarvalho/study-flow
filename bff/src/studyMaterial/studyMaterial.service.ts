@@ -42,13 +42,22 @@ export class StudyMaterialService {
         where: { id },
         relations: ['studyPlan'],
       });
+
       if (!studyMaterial) {
         throw new NotFoundException(
           `Material de estudo com ID ${id} não encontrado.`,
         );
       }
+
       return studyMaterial;
     } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+
       throw new InternalServerErrorException(
         'Erro ao buscar material de estudo.',
       );

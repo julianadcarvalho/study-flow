@@ -43,11 +43,20 @@ export class UsersService {
 
     try {
       const user = await this.userRepository.findOne({ where: { id } });
+
       if (!user) {
         throw new NotFoundException(`Usuário com ID ${id} não encontrado.`);
       }
+
       return user;
     } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+
       throw new InternalServerErrorException('Erro ao buscar usuário.');
     }
   }
@@ -67,16 +76,16 @@ export class UsersService {
   }
 
   async remove(id: number): Promise<void> {
-    if (!id || id <= 0) {
-      throw new BadRequestException('ID inválido.');
-    }
-
     try {
       const result = await this.userRepository.softDelete(id);
+
       if (result.affected === 0) {
         throw new NotFoundException(`Usuário com ID ${id} não encontrado.`);
       }
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Erro ao deletar usuário.');
     }
   }

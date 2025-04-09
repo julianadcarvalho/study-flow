@@ -36,13 +36,22 @@ export class StudyPlanService {
         where: { id },
         relations: ['materials'],
       });
+
       if (!studyPlan) {
         throw new NotFoundException(
           `Plano de estudo com ID ${id} não encontrado.`,
         );
       }
+
       return studyPlan;
     } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+
       throw new InternalServerErrorException('Erro ao buscar plano de estudo.');
     }
   }
