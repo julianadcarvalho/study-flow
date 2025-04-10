@@ -16,6 +16,7 @@ import {
   PlusCircleOutlined,
   ReadOutlined,
 } from '@ant-design/icons';
+import { getCurrentUser } from '../api/auth';
 
 const { Title, Paragraph } = Typography;
 
@@ -45,6 +46,17 @@ export const HomePage = () => {
       console.error('Erro ao buscar progresso', error);
     }
   };
+
+  useEffect(() => {
+    getCurrentUser()
+      .then((user) => {
+        console.log('Usuário logado:', user);
+      })
+      .catch(() => {
+        navigate('/home');
+      });
+  }, []);
+  
 
   useEffect(() => {
     fetchProgress();
@@ -91,13 +103,11 @@ export const HomePage = () => {
           </Row>
         </div>
 
-        {/* Progresso */}
         <div style={{ marginBottom: 32 }}>
           <Title level={5}>Seu progresso geral:</Title>
           <Progress percent={progress} status="active" />
         </div>
 
-        {/* Cards */}
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={12} lg={8}>
             <Card

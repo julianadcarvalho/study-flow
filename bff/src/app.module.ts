@@ -8,6 +8,7 @@ import { StudyMaterialModule } from './studyMaterial/studyMaterialmodule';
 import { StudyPlan } from './studyPlan/entities/studyPlan.entity';
 import { StudyMaterial } from './studyMaterial/entities/studyMaterial.entity';
 import { GeminiModule } from './gemine/gemini.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -26,12 +27,14 @@ import { GeminiModule } from './gemine/gemini.module';
         synchronize: false,
         migrations: ['dist/migrations/*.js'],
         migrationsRun: true,
+        isGlobal: true,
       }),
     }),
     UsersModule,
     StudyPlanModule,
     StudyMaterialModule,
     GeminiModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

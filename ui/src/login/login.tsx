@@ -34,6 +34,10 @@ export const LoginPage = () => {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
+  };
+
   return (
     <div
       style={{
@@ -77,6 +81,15 @@ export const LoginPage = () => {
                 </Button>
               </Form.Item>
             </Form>
+
+            <Button
+              type="default"
+              block
+              style={{ marginTop: 12 }}
+              onClick={handleGoogleLogin}
+            >
+              Entrar com Google
+            </Button>
           </Tabs.TabPane>
 
           <Tabs.TabPane tab="Primeiro Acesso" key="register">

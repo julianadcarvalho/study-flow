@@ -177,7 +177,7 @@ const StudyPlansPage = () => {
           </div>
         ) : (
           <List
-            grid={{ gutter: 24, xs: 1, sm: 2, md: 3, xl: 6 }} // 6 = 24 / 4 → 4 colunas
+            grid={{ gutter: 24, xs: 1, sm: 2, md: 3, xl: 6 }}
             dataSource={plans}
             renderItem={(plan) => {
               const cardBorder = {

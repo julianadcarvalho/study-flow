@@ -6,6 +6,7 @@ import StudyPlansPage from './pages/studyPlans';
 import CreateStudyPlanPage from './pages/createdStudyPlans';
 import StudyMaterialsPage from './pages/studyMaterialsPage';
 import { MainLayout } from './pages/mainLayout';
+import { OAuthCallbackPage } from './pages/OAuthCallbackPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/oauth-callback" element={<OAuthCallbackPage />} />
 
         <Route element={<MainLayout />}>
           <Route path="/home" element={<HomePage />} />

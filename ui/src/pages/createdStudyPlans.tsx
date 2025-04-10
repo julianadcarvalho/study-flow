@@ -47,7 +47,7 @@ export const CreateStudyPlanPage = () => {
 
     const fetchIASuggestion = async (descricao: string) => {
         try {
-            const res = await fetch('http://localhost:3000/ia/sugerir', {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/ia/sugerir`,  {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ descricao }),

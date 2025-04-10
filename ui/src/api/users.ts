@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000', 
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
 });
 
 export const createUser = async (data: {
@@ -17,5 +18,3 @@ export const getUsers = async () => {
   const response = await api.get('/users');
   return response.data;
 };
-
-// outros métodos (getOne, update, delete) podem seguir o mesmo padrão

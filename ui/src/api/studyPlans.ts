@@ -1,8 +1,8 @@
-// src/api/studyPlans.ts
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
 });
 
 export interface StudyPlanPayload {
@@ -18,7 +18,7 @@ export const createStudyPlan = async ({
   description,
   start_date,
   end_date,
-  user_id = 1, // ou passe dinamicamente se necessário
+  user_id = 1,
 }: {
   name: string;
   description?: string;

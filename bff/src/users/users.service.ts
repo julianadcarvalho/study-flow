@@ -9,6 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { OAuthUserDto } from './dto/oauth-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -87,6 +88,26 @@ export class UsersService {
         throw error;
       }
       throw new InternalServerErrorException('Erro ao deletar usuário.');
+    }
+  }
+
+  async findOrCreateOAuthUser(oauthUserDto: OAuthUserDto): Promise<User> {
+    try {
+      const { email, name } = oauthUserDto;
+
+      let user = await this.userRepository.findOne({ where: { email } });
+
+      if (!user) {
+        const newUser = this.userRepository.create({
+          email,
+          name,
+        });
+        user = await this.userRepository.save(newUser);
+      }
+
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException('Erro ao autenticar com OAuth.');
     }
   }
 }
