@@ -1,18 +1,28 @@
 name: Deploy to AWS EC2
 
 on:
-  push:
-    branches:
-      - master
+  workflow_run:
+    workflows: ["Build BFF", "Build UI"]
+    types:
+      - completed
 
 jobs:
   deploy:
-    name: Deploy app on EC2
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Download BFF artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: bff-build
+          path: ./bff-dist
+
+      - name: Download UI artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-build
+          path: ./ui-dist
 
       - name: Setup SSH
         run: |
@@ -21,16 +31,12 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
       - name: Deploy on EC2
         run: |
+          scp -r ./bff-dist ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/deploy/bff
+          scp -r ./ui-dist ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/deploy/ui
+          
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd ~/app || git clone https://github.com/${{ github.repository }}.git ~/app && cd ~/app
-            git pull origin master
             export DATABASE_HOST=mysql
             export DATABASE_PORT=3306
             export DATABASE_USER=${{ secrets.DATABASE_USER }}
@@ -44,5 +50,9 @@ jobs:
             export CORS_ORIGIN=https://study-flow.carvalho.dev.br
             export VITE_API_BASE_URL=https://api.study-flow.carvalho.dev.br
             export VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }}
-            cd bff && npm install && npm run build && pm2 restart dist/src/main.js || pm2 start dist/src/main.js --name bff
+            cd ~/deploy/bff
+            npm install --omit=dev
+            pm2 restart dist/src/main.js || pm2 start dist/src/main.js --name bff
+            sudo rm -rf /var/www/html/*
+            sudo cp -r ~/deploy/ui/* /var/www/html/
           EOF
