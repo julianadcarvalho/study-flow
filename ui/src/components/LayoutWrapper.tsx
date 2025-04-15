@@ -1,5 +1,6 @@
 import { Layout } from 'antd';
 import { MainLayout } from '../pages/mainLayout';
+
 const { Content } = Layout;
 
 const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
