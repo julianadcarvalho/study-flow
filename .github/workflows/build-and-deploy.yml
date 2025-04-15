@@ -1,16 +1,52 @@
-name: Deploy to AWS EC2
+name: Build and Deploy to AWS EC2
 
 on:
-  workflow_run:
-    workflows: ["Build BFF", "Build UI"]
-    types:
-      - completed
+  push:
+    branches: [master]
 
 jobs:
-  deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  build-bff:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bff
+    steps:
+      - uses: actions/checkout@v3
 
+      - name: Install BFF dependencies
+        run: npm install
+
+      - name: Build BFF app
+        run: npm run build
+
+      - name: Upload BFF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bff-build
+          path: ./bff/dist
+  build-ui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ui
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install UI dependencies
+        run: npm install
+
+      - name: Build UI app
+        run: npm run build
+
+      - name: Upload UI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-build
+          path: ./ui/dist
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build-bff, build-ui]
     steps:
       - name: Download BFF artifact
         uses: actions/download-artifact@v4
@@ -35,7 +71,7 @@ jobs:
         run: |
           scp -r ./bff-dist ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/deploy/bff
           scp -r ./ui-dist ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/deploy/ui
-          
+
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             export DATABASE_HOST=mysql
             export DATABASE_PORT=3306
@@ -50,9 +86,12 @@ jobs:
             export CORS_ORIGIN=https://study-flow.carvalho.dev.br
             export VITE_API_BASE_URL=https://api.study-flow.carvalho.dev.br
             export VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }}
+
             cd ~/deploy/bff
             npm install --omit=dev
             pm2 restart dist/src/main.js || pm2 start dist/src/main.js --name bff
+
             sudo rm -rf /var/www/html/*
             sudo cp -r ~/deploy/ui/* /var/www/html/
           EOF
+
