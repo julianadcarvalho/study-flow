@@ -23,7 +23,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bff-build
-          path: ./bff
+          path: |
+            ./bff/dist
+            ./bff/package.json
   build-ui:
     runs-on: ubuntu-latest
     defaults:
@@ -42,7 +44,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ui-build
-          path: ./ui
+          path: |
+            ./ui
+            ./bff/package.json
 
   deploy:
     runs-on: ubuntu-latest
