@@ -91,7 +91,7 @@ jobs:
 
             cd ~/deploy/bff
             npm install --omit=dev
-            pm2 restart dist/src/main.js || pm2 start dist/src/main.js --name bff
+            pm2 restart dist/main.js || pm2 start dist/main.js --name bff
 
             sudo rm -rf /var/www/html/*
             sudo cp -r ~/deploy/ui/* /var/www/html/
