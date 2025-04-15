@@ -69,8 +69,10 @@ jobs:
 
       - name: Deploy on EC2
         run: |
-          scp -r ./bff-dist ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/deploy/bff
-          scp -r ./ui-dist ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/deploy/ui
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p ~/deploy/bff ~/deploy/ui"
+          scp -r ./bff-dist/* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/deploy/bff/
+          scp -r ./ui-dist/* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/deploy/ui/
+
 
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             export DATABASE_HOST=mysql
