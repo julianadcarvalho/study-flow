@@ -53,7 +53,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "VITE_API_BASE_URL=https://api.study-flow.carvalho.dev.br" > .env
+          echo "VITE_API_BASE_URL=https://api.study-flow.carvalho.dev.br" >> .env
           echo "VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }}" >> .env
 
       - name: Build UI app
