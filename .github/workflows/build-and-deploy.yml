@@ -56,8 +56,6 @@ jobs:
           echo "VITE_API_BASE_URL=https://api.study-flow.carvalho.dev.br" > .env
           echo "VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }}" >> .env
 
-        run: npm run build
-
       - name: Build UI app
         run: npm run build
 
