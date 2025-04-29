@@ -66,6 +66,6 @@ export class StudyPlanService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.studyPlanRepository.softDelete(id);
+    await this.studyPlanRepository.delete(id);
   }
 }
